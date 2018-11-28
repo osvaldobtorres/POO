@@ -1,8 +1,10 @@
 package br.com.unicap.poo.controller;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 
+import br.com.unicap.poo.builder.ContaCandidatoBuilder;
 import br.com.unicap.poo.dao.ContaCandidatoDAO;
 import br.com.unicap.poo.dao.ContaEmpresaDAO;
 import br.com.unicap.poo.model.ContaCandidato;
@@ -19,8 +21,8 @@ public class CadastroController {
 		catch(JsonParseException e) {
 			return mensagemErro;
 		}
-		boolean teste = new ContaEmpresaDAO().insere(conta);
-		if (teste) {
+		boolean cadastrado = new ContaEmpresaDAO().insere(conta);
+		if (cadastrado) {
 			return "{\"mensagem\":\"Cadastro efetuado com sucesso!\"}";
 		}
 		else {
@@ -43,13 +45,24 @@ public class CadastroController {
 		String mensagemErro = "{\"mensagem\":\"Alguma coisa não funcionou como o esperado, certifique-se de que os dados sejam inseridos corretamente.\"}";
 		ContaCandidato conta = null;
 		try {
-			conta = (ContaCandidato) new Gson().fromJson(conteudo, ContaCandidato.class);
+			JsonObject json = new Gson().fromJson(conteudo, JsonObject.class);
+			conta = new ContaCandidatoBuilder().credenciais(json.get("login").getAsString(), json.get("senha").getAsString())
+					.dadosCadastrais(json.get("nome").getAsString(),
+						json.get("cpf").getAsString(),
+						json.get("dataDeNascimento").getAsString(),
+						json.get("telefone").getAsString(),
+						json.get("biografia").getAsString(),
+						json.get("experiencia").getAsString(),
+						json.get("pais").getAsString()
+					)
+					.build();
 		} 
-		catch(JsonParseException e) {
+		catch(Exception e) {
 			return mensagemErro;
 		}
-		boolean teste = new ContaCandidatoDAO().insere(conta);
-		if (teste) {
+		boolean cadastrado = new ContaCandidatoDAO().insere(conta);
+		
+		if (cadastrado) {
 			return "{\"mensagem\":\"Cadastro efetuado com sucesso!\"}";
 		}
 		else {

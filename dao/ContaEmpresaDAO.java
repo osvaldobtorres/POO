@@ -6,17 +6,16 @@ import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
 
-import br.com.unicap.poo.Database;
+import br.com.unicap.poo.factory.ConnectionFactory;
 import br.com.unicap.poo.model.ContaEmpresa;
 
 public class ContaEmpresaDAO {
 
 	public boolean insere(ContaEmpresa conta) {
 		String sql = "INSERT INTO EMPRESAS (login, senha, nome, descricao, areaDeAtuacao, pais, email) VALUES (?, ?, ?, ?, ?, ?, ?)";
-		Connection conn = null;
 		
 		try {
-			conn = Database.getConnection(); 
+			Connection conn = new ConnectionFactory().getConnection();
 			PreparedStatement ps = conn.prepareStatement(sql);
 			ps.setString(1, conta.getLogin());
 			ps.setString(2, conta.getSenha());
@@ -27,6 +26,7 @@ public class ContaEmpresaDAO {
 			ps.setString(7, conta.getEmpresa().getNome());
 			ps.executeUpdate();
 			ps.close();
+			conn.close();
 			return true;
 		} catch (Exception e) {
 			return false;
@@ -35,13 +35,14 @@ public class ContaEmpresaDAO {
 	
 	public boolean remove(int id) {
 		String sql = "DELETE FROM EMPRESAS WHERE id = ?";
-		Connection conn = null;
+
 		try {
-			conn = Database.getConnection();
+			Connection conn = new ConnectionFactory().getConnection();
 			PreparedStatement ps = conn.prepareStatement(sql);
 			ps.setInt(1, id);
 			ps.executeUpdate();
 			ps.close();
+			conn.close();
 			return true;
 		} catch (Exception e) {
 			return false;
@@ -50,10 +51,9 @@ public class ContaEmpresaDAO {
 	
 	public ContaEmpresa busca(int id) {
 		String sql = "SELECT * FROM EMPRESAS WHERE id = ?";
-		Connection conn = null;
 		
 		try {
-			conn = Database.getConnection();
+			Connection conn = new ConnectionFactory().getConnection();
 			PreparedStatement ps = conn.prepareStatement(sql);
 			ps.setInt(1, id);
 			ResultSet rs = ps.executeQuery();
@@ -69,6 +69,8 @@ public class ContaEmpresaDAO {
             		rs.getString("email")
     		);
 			rs.close();
+			ps.close();
+			conn.close();
 			return conta;
 		} catch (Exception e) {
 			throw new RuntimeException(e);
@@ -77,11 +79,10 @@ public class ContaEmpresaDAO {
 	
 	public List<ContaEmpresa> getTodas() {
         String sql = "SELECT * FROM EMPRESAS";
-		Connection conn = null;
 		List<ContaEmpresa> contas = new ArrayList<>();
 
         try {
-			conn = Database.getConnection();
+        	Connection conn = new ConnectionFactory().getConnection();
 			PreparedStatement ps = conn.prepareStatement(sql);
 			ResultSet rs = ps.executeQuery();
 			while (rs.next()) {
@@ -99,6 +100,7 @@ public class ContaEmpresaDAO {
 			}
 			rs.close();
 			ps.close();
+			conn.close();
 			return contas;
 		} catch (Exception e) {
 			throw new RuntimeException(e);

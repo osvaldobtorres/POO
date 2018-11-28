@@ -5,6 +5,7 @@ import com.google.gson.Gson;
 public class Candidato {
 	private String nome;
 	private String cpf;
+	private String estadoDoCpf;
 	private String dataDeNascimento;
 	private String telefone;
 	private String biografia;
@@ -12,9 +13,10 @@ public class Candidato {
 	private String pais;
 	
 	public Candidato(String nome, String cpf, String dataDeNascimento, String telefone, String biografia,
-			String experiencia, String pais) {
+			String experiencia, String pais, String estadoDoCpf) {
 		this.nome = nome;
 		this.cpf = cpf;
+		this.estadoDoCpf = estadoDoCpf;
 		this.dataDeNascimento = dataDeNascimento;
 		this.telefone = telefone;
 		this.biografia = biografia;
@@ -66,5 +68,11 @@ public class Candidato {
 	
 	public String toJson() {
 		return new Gson().toJson(this);
+	}
+	public String getEstadoDoCpf() {
+		return estadoDoCpf;
+	}
+	public void setEstadoDoCpf(String estadoDoCpf) {
+		this.estadoDoCpf = estadoDoCpf;
 	}
 }

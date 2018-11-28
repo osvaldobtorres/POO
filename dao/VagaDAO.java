@@ -6,17 +6,16 @@ import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
 
-import br.com.unicap.poo.Database;
+import br.com.unicap.poo.factory.ConnectionFactory;
 import br.com.unicap.poo.model.Vaga;
 
 public class VagaDAO {
 	
 	public boolean insere(Vaga vaga) {
 		String sql = "INSERT INTO VAGAS (idEmpresa, nome, descricao, area, experienciaNecessaria) VALUES (?, ?, ?, ?, ?)";
-		Connection conn = null;
 		
 		try {
-			conn = Database.getConnection();  
+			Connection conn = new ConnectionFactory().getConnection(); 
 			PreparedStatement ps = conn.prepareStatement(sql);
 			ps.setInt(1, vaga.getId());
 			ps.setString(2, vaga.getNome());
@@ -25,6 +24,7 @@ public class VagaDAO {
 			ps.setString(5, vaga.getExperienciaNecessaria());
 			ps.executeUpdate();
 			ps.close();
+			conn.close();
 			return true;
 		} catch (Exception e) {
 			return false;
@@ -33,13 +33,14 @@ public class VagaDAO {
 	
 	public boolean remove(int id) {
 		String sql = "DELETE FROM VAGAS WHERE id = ?";
-		Connection conn = null;
+
 		try {
-			conn = Database.getConnection();
+			Connection conn = new ConnectionFactory().getConnection();
 			PreparedStatement ps = conn.prepareStatement(sql);
 			ps.setInt(1, id);
 			ps.executeUpdate();
 			ps.close();
+			conn.close();
 			return true;
 		} catch (Exception e) {
 			return false;
@@ -48,10 +49,9 @@ public class VagaDAO {
 	
 	public Vaga busca(int id) {
 		String sql = "SELECT * FROM VAGAS WHERE id = ?";
-		Connection conn = null;
 		
 		try {
-			conn = Database.getConnection();
+			Connection conn = new ConnectionFactory().getConnection();
 			PreparedStatement ps = conn.prepareStatement(sql);
 			ps.setInt(1, id);
 			ResultSet rs = ps.executeQuery();
@@ -64,6 +64,8 @@ public class VagaDAO {
             		rs.getString("experienciaNecessaria")
     		);
 			rs.close();
+			ps.close();
+			conn.close();
 			return conta;
 		} catch (Exception e) {
 			throw new RuntimeException(e);
@@ -72,10 +74,9 @@ public class VagaDAO {
 	
 	public Vaga buscaPorEmpresa(int id) {
 		String sql = "SELECT * FROM VAGAS WHERE idEmpresa = ?";
-		Connection conn = null;
-		
+
 		try {
-			conn = Database.getConnection();
+			Connection conn = new ConnectionFactory().getConnection();
 			PreparedStatement ps = conn.prepareStatement(sql);
 			ps.setInt(1, id);
 			ResultSet rs = ps.executeQuery();
@@ -88,6 +89,8 @@ public class VagaDAO {
             		rs.getString("experienciaNecessaria")
     		);
 			rs.close();
+			ps.close();
+			conn.close();
 			return conta;
 		} catch (Exception e) {
 			throw new RuntimeException(e);
@@ -96,11 +99,10 @@ public class VagaDAO {
 	
 	public List<Vaga> getTodas() {
         String sql = "SELECT * FROM VAGAS";
-		Connection conn = null;
 		List<Vaga> vagas = new ArrayList<>();
 
         try {
-			conn = Database.getConnection();
+        	Connection conn = new ConnectionFactory().getConnection();
 			PreparedStatement ps = conn.prepareStatement(sql);
 			ResultSet rs = ps.executeQuery();
 			while (rs.next()) {
@@ -115,6 +117,7 @@ public class VagaDAO {
 			}
 			rs.close();
 			ps.close();
+			conn.close();
 			return vagas;
 		} catch (Exception e) {
 			throw new RuntimeException(e);

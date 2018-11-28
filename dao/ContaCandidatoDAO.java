@@ -6,17 +6,17 @@ import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
 
-import br.com.unicap.poo.Database;
+import br.com.unicap.poo.factory.ConnectionFactory;
 import br.com.unicap.poo.model.ContaCandidato;
 
 public class ContaCandidatoDAO {
 
 	public boolean insere(ContaCandidato conta) {
-		String sql = "INSERT INTO CANDIDATOS (login, senha, nome, cpf, telefone, biografia, experiencia, pais, dataDeNascimento)"
-				+ " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
-		Connection conn = null;
+		String sql = "INSERT INTO CANDIDATOS (login, senha, nome, cpf, telefone, biografia, experiencia, pais, dataDeNascimento, estadoDoCpf)"
+				+ " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+
 		try {
-			conn = Database.getConnection();
+			Connection conn = new ConnectionFactory().getConnection();
 			PreparedStatement ps = conn.prepareStatement(sql);
 			ps.setString(1, conta.getLogin());
 			ps.setString(2, conta.getSenha());
@@ -27,8 +27,10 @@ public class ContaCandidatoDAO {
 			ps.setString(7, conta.getCandidato().getExperiencia());
 			ps.setString(8, conta.getCandidato().getPais());
 			ps.setString(9, conta.getCandidato().getDataDeNascimento());
+			ps.setString(10, conta.getCandidato().getEstadoDoCpf());
 			ps.executeUpdate();
 			ps.close();
+			conn.close();
 			return true;
 		} catch (Exception e) {
 			return false;
@@ -37,13 +39,14 @@ public class ContaCandidatoDAO {
 	
 	public boolean remove(int id) {
 		String sql = "DELETE FROM CANDIDATOS WHERE id = ?";
-		Connection conn = null;
+
 		try {
-			conn = Database.getConnection();
+			Connection conn = new ConnectionFactory().getConnection();
 			PreparedStatement ps = conn.prepareStatement(sql);
 			ps.setInt(1, id);
 			ps.executeUpdate();
 			ps.close();
+			conn.close();
 			return true;
 		} catch (Exception e) {
 			return false;
@@ -52,10 +55,9 @@ public class ContaCandidatoDAO {
 	
 	public ContaCandidato busca(int id) {
 		String sql = "SELECT * FROM CANDIDATOS WHERE id = ?";
-		Connection conn = null;
 		
 		try {
-			conn = Database.getConnection();
+			Connection conn = new ConnectionFactory().getConnection();
 			PreparedStatement ps = conn.prepareStatement(sql);
 			ps.setInt(1, id);
 			ResultSet rs = ps.executeQuery();
@@ -70,9 +72,12 @@ public class ContaCandidatoDAO {
             		rs.getString("telefone"),
             		rs.getString("biografia"),
             		rs.getString("experiencia"),
-            		rs.getString("pais")
+            		rs.getString("pais"),
+            		rs.getString("estadoDoCpf")
     		);
 			rs.close();
+			ps.close();
+			conn.close();
 			return conta;
 		} catch (Exception e) {
 			throw new RuntimeException(e);
@@ -81,11 +86,10 @@ public class ContaCandidatoDAO {
 	
 	public List<ContaCandidato> getTodas() {
         String sql = "SELECT * FROM CANDIDATOS";
-		Connection conn = null;
 		List<ContaCandidato> contas = new ArrayList<>();
 
         try {
-			conn = Database.getConnection();
+        	Connection conn = new ConnectionFactory().getConnection();
 			PreparedStatement ps = conn.prepareStatement(sql);
 			ResultSet rs = ps.executeQuery();
 			while (rs.next()) {
@@ -99,12 +103,14 @@ public class ContaCandidatoDAO {
 	            		rs.getString("telefone"),
 	            		rs.getString("biografia"),
 	            		rs.getString("experiencia"),
-	            		rs.getString("pais")
+	            		rs.getString("pais"),
+	            		rs.getString("estadoDoCpf")
 	    		);
 				contas.add(conta);
 			}
 			rs.close();
 			ps.close();
+			conn.close();
 			return contas;
 		} catch (Exception e) {
 			throw new RuntimeException(e);

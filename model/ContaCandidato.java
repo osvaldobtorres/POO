@@ -7,8 +7,8 @@ public class ContaCandidato extends Conta {
 	private Candidato candidato;
 	
 	public ContaCandidato(int id, String login, String senha, String nome, String cpf, 
-			String dataDeNascimento, String telefone, String biografia, String experiencia, String pais) {
-		this.candidato = new Candidato(nome, cpf, dataDeNascimento, telefone, biografia, experiencia, pais);
+			String dataDeNascimento, String telefone, String biografia, String experiencia, String pais, String estadoDoCpf) {
+		this.candidato = new Candidato(nome, cpf, dataDeNascimento, telefone, biografia, experiencia, pais, estadoDoCpf);
 		this.id = id;
 		super.setLogin(login);
 		super.setSenha(senha);
@@ -25,6 +25,7 @@ public class ContaCandidato extends Conta {
 	public Candidato getCandidato() {
 		return this.candidato;
 	}
+	
 	public String toJson() {
 		return new Gson().toJson(this.candidato);
 	}
